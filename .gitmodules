@@ -1,0 +1,4 @@
+[submodule "ttyd"]
+	path = ttyd
+	url = https://github.com/mikoto2000/ttyd.git
+	branch = che-ttyd
