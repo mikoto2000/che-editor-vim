@@ -10,18 +10,18 @@ TODO: che.openshift.io の URL
 ## Build
 
 ```sh
-git clone --recurse -b dev http://github.com/mikoto2000/che-editor-vim.git
+git clone --recurse http://github.com/mikoto2000/che-editor-vim.git
 cd che-editor-vim
 docker run -it --rm -v "$(pwd)/ttyd:/work" --workdir="/work" node yarn --cwd html/ install
 docker run -it --rm -v "$(pwd)/ttyd:/work" --workdir="/work" node yarn --cwd html/ run build
 
-docker build --build-arg http_proxy=http://host.docker.internal:3142 -t mikoto2000/che-editor-vim:dev .
+docker build -t mikoto2000/che-editor-vim:dev .
 ```
 
 ## License:
 
 ```
-Copyright (c) 2019 mikoto2000
+Copyright (c) 2020 mikoto2000
 
 This program and the accompanying materials are made
 available under the terms of the Eclipse Public License 2.0
