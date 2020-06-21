@@ -73,5 +73,4 @@ CMD ttyd -p 8080 -I /var/ttyd-index.html entrypoint.sh
 
 USER user
 WORKDIR /projects
-ENV HOME /projects
 
