@@ -5,8 +5,13 @@ LABEL version="1.0.0"
 LABEL description "version: 1.0.0"
 
 RUN apt-get update \
-    && apt-get upgrade -y \
+    && apt-get install -y curl \
+        gnupg2 \
+    && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
+    && apt-get update \
     && apt-get install -y \
+        yarn \
         cmake \
         g++ \
         pkg-config \
@@ -18,8 +23,10 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN git clone -b 1.5.2 https://github.com/tsl0922/ttyd \
+RUN git clone -b che-ttyd https://github.com/mikoto2000/ttyd \
     && cd ttyd \
+    && yarn --cwd html/ install \
+    && yarn --cwd html/ run build \
     && mkdir build \
     && cd build \
     && cmake .. \
@@ -30,7 +37,7 @@ FROM mikoto2000/che-stack-base:debian
 
 LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
 LABEL version="1.0.0"
-LABEL description "vim: 8.1.1401, ttyd: 1.5.2"
+LABEL description "vim: 8.1.1401, ttyd: 1.6.1"
 
 USER root
 
@@ -68,8 +75,8 @@ COPY --from=build \
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 
-COPY ./ttyd/src/index.html /var/ttyd-index.html
-CMD ttyd -p 8080 -I /var/ttyd-index.html entrypoint.sh
+COPY ./ttyd/html/dist/index.html /var/ttyd-index.html
+CMD ttyd -p 8080 entrypoint.sh
 
 USER user
 WORKDIR /projects
