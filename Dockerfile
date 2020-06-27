@@ -48,7 +48,9 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
         git \
-        vim=2:8.1.0875-5
+        vim=2:8.1.0875-5 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build \
         /usr/local/bin/ttyd \
