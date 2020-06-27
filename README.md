@@ -12,9 +12,6 @@ TODO: che.openshift.io の URL
 ```sh
 git clone --recurse http://github.com/mikoto2000/che-editor-vim.git
 cd che-editor-vim
-docker run -it --rm -v "$(pwd)/ttyd:/work" --workdir="/work" node yarn --cwd html/ install
-docker run -it --rm -v "$(pwd)/ttyd:/work" --workdir="/work" node yarn --cwd html/ run build
-
 docker build -t mikoto2000/che-editor-vim:dev .
 ```
 

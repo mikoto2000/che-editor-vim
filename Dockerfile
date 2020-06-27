@@ -75,7 +75,6 @@ COPY --from=build \
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 
-COPY ./ttyd/html/dist/index.html /var/ttyd-index.html
 CMD ttyd -p 8080 entrypoint.sh
 
 USER user
