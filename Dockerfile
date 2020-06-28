@@ -55,10 +55,6 @@ RUN apt-get update \
 COPY --from=build \
         /usr/local/bin/ttyd \
         /usr/local/bin/ttyd
-
-COPY --from=build \
-        /usr/local/bin/ttyd \
-        /usr/local/bin/ttyd
 COPY --from=build \
         /usr/lib/x86_64-linux-gnu/libssl.so.1.1 \
         /usr/lib/x86_64-linux-gnu/libssl.so.1.1
