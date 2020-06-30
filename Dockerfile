@@ -1,3 +1,32 @@
+FROM debian:buster-slim AS git
+
+LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
+LABEL version="1.0.0"
+LABEL description "git: 2.27.0"
+
+RUN apt-get update \
+    && apt-get -y install \
+        libcurl4-gnutls-dev \
+        libexpat1-dev \
+        gettext \
+        libz-dev \
+        libssl-dev \
+        autoconf \
+        asciidoc \
+        xmlto \
+        docbook2x \
+        make \
+        gcc \
+        curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -L https://github.com/git/git/archive/v2.27.0.tar.gz -O \
+    && tar xf v2.27.0.tar.gz \
+    && cd git-2.27.0/ \
+    && make prefix=/opt/git install install-doc install-html install-info
+
+
 FROM debian:buster-slim AS build
 
 LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
@@ -47,8 +76,8 @@ USER root
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
-        git \
         vim=2:8.1.0875-5 \
+    && apt-get purge -y git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -84,8 +113,13 @@ COPY --from=build \
         /usr/local/bin/che-terminal-connector \
         /usr/local/bin/che-terminal-connector
 
+COPY --from=git \
+        /opt/git \
+        /opt/git
+
 CMD ttyd -p 8080 entrypoint.sh
 
 USER user
 WORKDIR /projects
+ENV PATH $PATH:/opt/git/bin
 
