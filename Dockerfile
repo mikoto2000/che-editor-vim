@@ -74,7 +74,6 @@ LABEL description "vim: 8.1.1401, ttyd: 1.6.1"
 USER root
 
 RUN apt-get update \
-    && apt-get upgrade -y \
     && apt-get install -y \
         vim=2:8.1.0875-5 \
     && apt-get purge -y git \
