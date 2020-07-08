@@ -65,6 +65,9 @@ RUN git clone -b che-ttyd https://github.com/mikoto2000/ttyd \
 RUN curl -L https://github.com/mikoto2000/che-terminal-connector/releases/download/v0.0.2/che-terminal-connector -o /usr/local/bin/che-terminal-connector \
     && chmod 755 /usr/local/bin/che-terminal-connector
 
+RUN curl -L https://github.com/mikoto2000/che-project-cloner/releases/download/v0.0.1/che-project-cloner -o /usr/local/bin/che-project-cloner \
+    && chmod 755 /usr/local/bin/che-project-cloner
+
 FROM mikoto2000/che-stack-base:debian
 
 LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
@@ -102,8 +105,6 @@ COPY --from=build \
         /usr/lib/x86_64-linux-gnu/libuv.so.1 \
         /usr/lib/x86_64-linux-gnu/libuv.so.1
 
-COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
-
 COPY --from=build \
         /usr/local/bin/che-terminal-connector \
         /usr/local/bin/che-terminal-connector
@@ -111,6 +112,12 @@ COPY --from=build \
 COPY --from=git \
         /opt/git \
         /opt/git
+
+COPY --from=build \
+        /usr/local/bin/che-project-cloner \
+        /usr/local/bin/che-project-cloner
+
+COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 
 CMD ttyd -p 8080 entrypoint.sh
 
