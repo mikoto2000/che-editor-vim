@@ -68,7 +68,7 @@ RUN curl -L https://github.com/mikoto2000/che-terminal-connector/releases/downlo
 RUN curl -L https://github.com/mikoto2000/che-project-cloner/releases/download/v0.0.1/che-project-cloner -o /usr/local/bin/che-project-cloner \
     && chmod 755 /usr/local/bin/che-project-cloner
 
-FROM mikoto2000/che-stack-base:debian
+FROM debian:buster-slim
 
 LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
 LABEL version="1.0.0"
@@ -79,6 +79,7 @@ USER root
 RUN apt-get update \
     && apt-get install -y \
         vim=2:8.1.0875-5 \
+        ssh \
     && apt-get purge -y git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -117,11 +118,15 @@ COPY --from=build \
         /usr/local/bin/che-project-cloner \
         /usr/local/bin/che-project-cloner
 
-COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY --chown=0:0 ./entrypoint.sh /entrypoint.sh
+COPY ./ttyd_entrypoint.sh /ttyd_entrypoint.sh
 
-CMD ttyd -p 8080 entrypoint.sh
+ENTRYPOINT [ "/entrypoint.sh" ]
 
-USER user
+RUN mkdir -p /home/user && chgrp -R 0 /home && chmod -R g=u /etc/passwd /etc/group /home && chmod +x /entrypoint.sh
+
+USER 1001
 WORKDIR /projects
 ENV PATH $PATH:/opt/git/bin
+ENV HOME /projects
 

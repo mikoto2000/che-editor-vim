@@ -1,13 +1,34 @@
 #!/bin/bash
 
-cd /projects
+# Ensure $HOME exists when starting
+if [ ! -d "${HOME}" ]; then
+  mkdir -p "${HOME}"
+fi
 
-echo "Start project clone..."
-che-project-cloner
-echo "done."
+# Setup $PS1 for a consistent and reasonable prompt
+if [ -w "${HOME}" ] && [ ! -f "${HOME}"/.bashrc ]; then
+  echo "PS1='\s-\v \w \$ '" > "${HOME}"/.bashrc
+fi
 
+# Add current (arbitrary) user to /etc/passwd and /etc/group
+if ! whoami &> /dev/null; then
+  if [ -w /etc/passwd ]; then
+    echo "${USER_NAME:-user}:x:$(id -u):0:${USER_NAME:-user} user:${HOME}:/bin/bash" >> /etc/passwd
+    echo "${USER_NAME:-user}:x:$(id -u):" >> /etc/group
+  fi
+fi
+
+exec ttyd -p 8080 /ttyd_entrypoint.sh &
+
+# See: http://veithen.github.io/2014/11/16/sigterm-propagation.html
+PID=$!
+wait ${PID}
+wait ${PID}
+EXIT_STATUS=$?
+
+# コンテナが終了しないようにする
 while true
 do
-    HOME=/projects vim
+  tail -f /dev/null & wait ${!}
 done
 
