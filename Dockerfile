@@ -65,7 +65,7 @@ RUN git clone -b che-ttyd https://github.com/mikoto2000/ttyd \
 RUN curl -L https://github.com/mikoto2000/che-terminal-connector/releases/download/v0.0.2/che-terminal-connector -o /usr/local/bin/che-terminal-connector \
     && chmod 755 /usr/local/bin/che-terminal-connector
 
-RUN curl -L https://github.com/mikoto2000/che-project-cloner/releases/download/v0.0.1/che-project-cloner -o /usr/local/bin/che-project-cloner \
+RUN curl -L https://github.com/mikoto2000/che-project-cloner/releases/download/v0.0.2/che-project-cloner -o /usr/local/bin/che-project-cloner \
     && chmod 755 /usr/local/bin/che-project-cloner
 
 FROM debian:buster-slim
