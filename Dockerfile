@@ -80,6 +80,7 @@ RUN apt-get update \
     && apt-get install -y \
         vim=2:8.1.0875-5 \
         ssh \
+        libcurl3-gnutls \
     && apt-get purge -y git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
