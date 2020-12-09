@@ -1,37 +1,10 @@
-FROM debian:buster-slim AS git
-
-LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
-LABEL version="1.0.0"
-LABEL description "git: 2.27.0"
-
-RUN apt-get update \
-    && apt-get -y install \
-        libcurl4-gnutls-dev \
-        libexpat1-dev \
-        gettext \
-        libz-dev \
-        libssl-dev \
-        autoconf \
-        asciidoc \
-        xmlto \
-        docbook2x \
-        make \
-        gcc \
-        curl \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN curl -L https://github.com/git/git/archive/v2.27.0.tar.gz -O \
-    && tar xf v2.27.0.tar.gz \
-    && cd git-2.27.0/ \
-    && make prefix=/opt/git install install-doc install-html install-info
-
-
-FROM debian:buster-slim AS build
+FROM ubuntu:focal AS build
 
 LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
 LABEL version="1.0.0"
 LABEL description "version: 1.0.0"
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
     && apt-get install -y curl \
@@ -62,27 +35,30 @@ RUN git clone -b che-ttyd https://github.com/mikoto2000/ttyd \
     && make \
     && make install
 
-RUN curl -L https://github.com/mikoto2000/che-terminal-connector/releases/download/v0.0.2/che-terminal-connector -o /usr/local/bin/che-terminal-connector \
-    && chmod 755 /usr/local/bin/che-terminal-connector
-
 RUN curl -L https://github.com/mikoto2000/che-project-cloner/releases/download/v0.0.2/che-project-cloner -o /usr/local/bin/che-project-cloner \
     && chmod 755 /usr/local/bin/che-project-cloner
 
-FROM debian:buster-slim
+RUN curl -L https://github.com/mikoto2000/che-terminal-connector/releases/download/v0.0.3/che-terminal-connector -o /usr/local/bin/che-terminal-connector \
+    && chmod 755 /usr/local/bin/che-terminal-connector
+
+FROM ubuntu:focal
 
 LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
 LABEL version="1.0.0"
-LABEL description "vim: 8.1.1401, ttyd: 1.6.1"
+LABEL description "vim, ttyd, build-essential, clang, nodejs, java, ruby, python"
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 USER root
 
 RUN apt-get update \
     && apt-get install -y \
-        vim=2:8.1.0875-5 \
+        vim \
         ssh \
         libcurl3-gnutls \
         curl \
-    && apt-get purge -y git \
+        zip \
+        unzip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -96,11 +72,11 @@ COPY --from=build \
         /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 \
         /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1
 COPY --from=build \
-        /usr/lib/x86_64-linux-gnu/libwebsockets.so.8 \
-        /usr/lib/x86_64-linux-gnu/libwebsockets.so.8
+        /usr/lib/x86_64-linux-gnu/libwebsockets.so.15 \
+        /usr/lib/x86_64-linux-gnu/libwebsockets.so.15
 COPY --from=build \
-        /usr/lib/x86_64-linux-gnu/libjson-c.so.3 \
-        /usr/lib/x86_64-linux-gnu/libjson-c.so.3
+        /usr/lib/x86_64-linux-gnu/libjson-c.so.4 \
+        /usr/lib/x86_64-linux-gnu/libjson-c.so.4
 COPY --from=build \
         /usr/lib/x86_64-linux-gnu/libev.so.4 \
         /usr/lib/x86_64-linux-gnu/libev.so.4
@@ -111,10 +87,6 @@ COPY --from=build \
 COPY --from=build \
         /usr/local/bin/che-terminal-connector \
         /usr/local/bin/che-terminal-connector
-
-COPY --from=git \
-        /opt/git \
-        /opt/git
 
 COPY --from=build \
         /usr/local/bin/che-project-cloner \
@@ -127,8 +99,28 @@ ENTRYPOINT [ "/entrypoint.sh" ]
 
 RUN mkdir -p /home/user && chgrp -R 0 /home && chmod -R g=u /etc/passwd /etc/group /home && chmod +x /entrypoint.sh
 
+# install dev tools
+RUN apt-get update \
+    && apt-get install -y \
+        build-essential \
+        clang \
+        clangd \
+        clang-format \
+        clang-tidy \
+        gdb \
+        lld \
+        openjdk-14-jdk-headless \
+        nodejs \
+        python3 \
+        ruby \
+        jq \
+        git \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && update-alternatives --install /lib/x86_64-linux-gnu/libz3.so.4.8 libz3.4.8 /lib/x86_64-linux-gnu/libz3.so.4 100
+
 USER 1001
 WORKDIR /projects
-ENV PATH $PATH:/opt/git/bin
 ENV HOME /projects
+ENV PATH $PATH:/opt/jdk-15/bin
 
