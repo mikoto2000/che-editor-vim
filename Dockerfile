@@ -41,6 +41,7 @@ RUN curl -L https://github.com/mikoto2000/che-project-cloner/releases/download/v
 RUN curl -L https://github.com/mikoto2000/che-terminal-connector/releases/download/v0.0.3/che-terminal-connector -o /usr/local/bin/che-terminal-connector \
     && chmod 755 /usr/local/bin/che-terminal-connector
 
+
 FROM ubuntu:focal
 
 LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
@@ -59,8 +60,17 @@ RUN apt-get update \
         curl \
         zip \
         unzip \
+        clang \
+        openjdk-14-jdk-headless \
+        nodejs \
+        python3 \
+        ruby \
+        jq \
+        git \
+        libz3-4 \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && update-alternatives --install /lib/x86_64-linux-gnu/libz3.so.4.8 libz3.4.8 /lib/x86_64-linux-gnu/libz3.so.4 100
 
 COPY --from=build \
         /usr/local/bin/ttyd \
@@ -98,26 +108,6 @@ COPY ./ttyd_entrypoint.sh /ttyd_entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
 
 RUN mkdir -p /home/user && chgrp -R 0 /home && chmod -R g=u /etc/passwd /etc/group /home && chmod +x /entrypoint.sh
-
-# install dev tools
-RUN apt-get update \
-    && apt-get install -y \
-        build-essential \
-        clang \
-        clangd \
-        clang-format \
-        clang-tidy \
-        gdb \
-        lld \
-        openjdk-14-jdk-headless \
-        nodejs \
-        python3 \
-        ruby \
-        jq \
-        git \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && update-alternatives --install /lib/x86_64-linux-gnu/libz3.so.4.8 libz3.4.8 /lib/x86_64-linux-gnu/libz3.so.4 100
 
 USER 1001
 WORKDIR /projects
