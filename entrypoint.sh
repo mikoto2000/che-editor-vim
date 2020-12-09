@@ -18,7 +18,7 @@ if ! whoami &> /dev/null; then
   fi
 fi
 
-exec ttyd -p 8080 /ttyd_entrypoint.sh &
+exec ttyd -p 3100 /ttyd_entrypoint.sh &
 
 # See: http://veithen.github.io/2014/11/16/sigterm-propagation.html
 PID=$!
