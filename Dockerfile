@@ -35,14 +35,14 @@ RUN git clone -b che-ttyd https://github.com/mikoto2000/ttyd \
     && make \
     && make install
 
-RUN curl -L https://github.com/mikoto2000/che-project-cloner/releases/download/v0.0.2/che-project-cloner -o /usr/local/bin/che-project-cloner \
-    && chmod 755 /usr/local/bin/che-project-cloner
-
 RUN curl -L https://github.com/mikoto2000/che-terminal-connector/releases/download/v0.0.3/che-terminal-connector -o /usr/local/bin/che-terminal-connector \
     && chmod 755 /usr/local/bin/che-terminal-connector
 
 RUN curl -L https://github.com/mikoto2000/che-endpoint-viewer/releases/download/v0.0.1/che-endpoint-viewer -o /usr/local/bin/che-endpoint-viewer \
     && chmod 755 /usr/local/bin/che-endpoint-viewer
+
+RUN curl -L https://github.com/mikoto2000/che-project-cloner/releases/download/v0.0.3/che-project-cloner -o /usr/local/bin/che-project-cloner \
+    && chmod 755 /usr/local/bin/che-project-cloner
 
 
 FROM ubuntu:focal
