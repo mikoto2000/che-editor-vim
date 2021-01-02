@@ -120,4 +120,5 @@ USER 1001
 WORKDIR /projects
 ENV HOME /projects
 ENV PATH $PATH:/opt/jdk-15/bin
+ENV SHELL bash
 
