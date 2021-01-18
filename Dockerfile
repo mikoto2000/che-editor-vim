@@ -44,6 +44,9 @@ RUN curl -L https://github.com/mikoto2000/che-endpoint-viewer/releases/download/
 RUN curl -L https://github.com/mikoto2000/che-project-cloner/releases/download/v0.0.3/che-project-cloner -o /usr/local/bin/che-project-cloner \
     && chmod 755 /usr/local/bin/che-project-cloner
 
+RUN curl -L https://github.com/mikoto2000/che-ssh-tool/releases/download/0.0.1/che-ssh-tool -o /usr/local/bin/che-ssh-tool \
+    && chmod 755 /usr/local/bin/che-ssh-tool
+
 
 FROM ubuntu:focal
 
@@ -108,6 +111,10 @@ COPY --from=build \
 COPY --from=build \
         /usr/local/bin/che-endpoint-viewer \
         /usr/local/bin/che-endpoint-viewer
+
+COPY --from=build \
+        /usr/local/bin/che-ssh-tool \
+        /usr/local/bin/che-ssh-tool
 
 COPY --chown=0:0 ./entrypoint.sh /entrypoint.sh
 COPY ./ttyd_entrypoint.sh /ttyd_entrypoint.sh
