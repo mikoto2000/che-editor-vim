@@ -35,7 +35,7 @@ RUN git clone -b che-ttyd https://github.com/mikoto2000/ttyd \
     && make \
     && make install
 
-RUN curl -L https://github.com/mikoto2000/che-terminal-connector/releases/download/v0.0.3/che-terminal-connector -o /usr/local/bin/che-terminal-connector \
+RUN curl -L https://github.com/mikoto2000/che-terminal-connector/releases/download/v0.0.4/che-terminal-connector -o /usr/local/bin/che-terminal-connector \
     && chmod 755 /usr/local/bin/che-terminal-connector
 
 RUN curl -L https://github.com/mikoto2000/che-endpoint-viewer/releases/download/v0.0.1/che-endpoint-viewer -o /usr/local/bin/che-endpoint-viewer \
@@ -67,7 +67,7 @@ RUN apt-get update \
         zip \
         unzip \
         clang \
-        openjdk-14-jdk-headless \
+        openjdk-17-jdk-headless \
         nodejs \
         python3 \
         ruby \
