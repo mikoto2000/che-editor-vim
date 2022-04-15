@@ -9,11 +9,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get install -y curl \
         gnupg2 \
-    && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-    && apt-get update \
+    && curl -fsSL https://deb.nodesource.com/setup_12.x | bash - \
     && apt-get install -y \
-        yarn \
+        nodejs \
         cmake \
         g++ \
         pkg-config \
@@ -26,26 +24,15 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git clone -b che-ttyd https://github.com/mikoto2000/ttyd \
-    && cd ttyd \
-    && yarn --cwd html/ install \
-    && yarn --cwd html/ run build \
+    && cd ttyd/html \
+    && npx yarn install \
+    && npx yarn run build \
+    && cd .. \
     && mkdir build \
     && cd build \
     && cmake .. \
     && make \
     && make install
-
-RUN curl -L https://github.com/mikoto2000/che-terminal-connector/releases/download/v0.0.4/che-terminal-connector -o /usr/local/bin/che-terminal-connector \
-    && chmod 755 /usr/local/bin/che-terminal-connector
-
-RUN curl -L https://github.com/mikoto2000/che-endpoint-viewer/releases/download/v0.0.1/che-endpoint-viewer -o /usr/local/bin/che-endpoint-viewer \
-    && chmod 755 /usr/local/bin/che-endpoint-viewer
-
-RUN curl -L https://github.com/mikoto2000/che-project-cloner/releases/download/v0.0.3/che-project-cloner -o /usr/local/bin/che-project-cloner \
-    && chmod 755 /usr/local/bin/che-project-cloner
-
-RUN curl -L https://github.com/mikoto2000/che-ssh-tool/releases/download/0.0.1/che-ssh-tool -o /usr/local/bin/che-ssh-tool \
-    && chmod 755 /usr/local/bin/che-ssh-tool
 
 
 FROM ubuntu:focal
@@ -59,6 +46,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 USER root
 
 RUN apt-get update \
+    && apt-get install -y curl \
+        gnupg2 \
+    && curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \
     && apt-get install -y \
         vim \
         ssh \
@@ -74,47 +64,28 @@ RUN apt-get update \
         jq \
         git \
         libz3-4 \
+        libssl1.1 \
+        libwebsockets15 \
+        libjson-c4 \
+        libev4 \
+        libuv1 \
+        language-pack-ja \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && update-alternatives --install /lib/x86_64-linux-gnu/libz3.so.4.8 libz3.4.8 /lib/x86_64-linux-gnu/libz3.so.4 100
+    && update-alternatives --install "/lib/$(uname -m)-linux-gnu/libz3.so.4.8" libz3.4.8 "/lib/$(uname -m)-linux-gnu/libz3.so.4" 100 \
+    && locale-gen ja_JP.UTF-8
+
+ENV LANG ja_JP.UTF-8
+
+RUN npm install -g \
+        che-terminal-connector \
+        che-project-cloner \
+        che-endpoint-viewer \
+        che-ssh-tool
 
 COPY --from=build \
         /usr/local/bin/ttyd \
         /usr/local/bin/ttyd
-COPY --from=build \
-        /usr/lib/x86_64-linux-gnu/libssl.so.1.1 \
-        /usr/lib/x86_64-linux-gnu/libssl.so.1.1
-COPY --from=build \
-        /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 \
-        /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1
-COPY --from=build \
-        /usr/lib/x86_64-linux-gnu/libwebsockets.so.15 \
-        /usr/lib/x86_64-linux-gnu/libwebsockets.so.15
-COPY --from=build \
-        /usr/lib/x86_64-linux-gnu/libjson-c.so.4 \
-        /usr/lib/x86_64-linux-gnu/libjson-c.so.4
-COPY --from=build \
-        /usr/lib/x86_64-linux-gnu/libev.so.4 \
-        /usr/lib/x86_64-linux-gnu/libev.so.4
-COPY --from=build \
-        /usr/lib/x86_64-linux-gnu/libuv.so.1 \
-        /usr/lib/x86_64-linux-gnu/libuv.so.1
-
-COPY --from=build \
-        /usr/local/bin/che-terminal-connector \
-        /usr/local/bin/che-terminal-connector
-
-COPY --from=build \
-        /usr/local/bin/che-project-cloner \
-        /usr/local/bin/che-project-cloner
-
-COPY --from=build \
-        /usr/local/bin/che-endpoint-viewer \
-        /usr/local/bin/che-endpoint-viewer
-
-COPY --from=build \
-        /usr/local/bin/che-ssh-tool \
-        /usr/local/bin/che-ssh-tool
 
 COPY --chown=0:0 ./entrypoint.sh /entrypoint.sh
 COPY ./ttyd_entrypoint.sh /ttyd_entrypoint.sh
@@ -126,6 +97,5 @@ RUN mkdir -p /home/user && chgrp -R 0 /home && chmod -R g=u /etc/passwd /etc/gro
 USER 1001
 WORKDIR /projects
 ENV HOME /projects
-ENV PATH $PATH:/opt/jdk-15/bin
 ENV SHELL bash
 
