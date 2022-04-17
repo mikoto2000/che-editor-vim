@@ -87,15 +87,20 @@ COPY --from=build \
         /usr/local/bin/ttyd \
         /usr/local/bin/ttyd
 
+ENV HOME /projects
+WORKDIR /projects
+
+RUN mkdir -p /projects \
+    && for f in "${HOME}" "/etc/passwd" "/etc/group" "/projects"; do\
+       chgrp -R 0 ${f} && \
+       chmod -R g+rwX ${f}; \
+    done
+
 COPY --chown=0:0 ./entrypoint.sh /entrypoint.sh
 COPY ./ttyd_entrypoint.sh /ttyd_entrypoint.sh
 
-ENTRYPOINT [ "/entrypoint.sh" ]
-
-RUN mkdir -p /home/user && chgrp -R 0 /home && chmod -R g=u /etc/passwd /etc/group /home && chmod +x /entrypoint.sh
-
-USER 1001
-WORKDIR /projects
-ENV HOME /projects
 ENV SHELL bash
+
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD ["sleep", "infinity"]
 
