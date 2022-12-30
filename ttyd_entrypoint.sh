@@ -1,9 +1,5 @@
 #!/bin/bash
 
-echo "Start project clone..."
-che-project-cloner
-echo "done."
-
 echo "Create link if _vim exists..."
 if [ -d ~/_vim ]; then
     if [ ! -L ~/.vim ]; then
@@ -12,14 +8,9 @@ if [ -d ~/_vim ]; then
 fi
 echo "done."
 
-echo "check cacert."
-if [ -e /tmp/che/secret/ca.crt ] ; then
-    SELF_SIGNED_CERT_OPTION="--cacert /tmp/che/secret/ca.crt"
-else
-    SELF_SIGNED_CERT_OPTION=""
-fi
-
-watch -n 180 curl $SELF_SIGNED_CERT_OPTION -XPUT ${CHE_API_EXTERNAL}/activity/${CHE_WORKSPACE_ID}?token=${CHE_MACHINE_TOKEN} > /dev/null &
+# ワークスペースの強制終了を防ぐために
+# che-machine-exec に定期的にアクティビティを送信
+watch -n 1500 curl -X POST localhost:${MACHINE_EXEC_PORT}/activity/tick > /dev/null &
 
 clear
 

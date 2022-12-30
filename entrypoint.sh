@@ -18,17 +18,5 @@ if [ "${USER_ID}" -ne 0 ] && command -v sudo >/dev/null 2>&1 && sudo -n true > /
     sudo chown "${USER_ID}:${GROUP_ID}" /projects
 fi
 
-exec ttyd -p 3100 /ttyd_entrypoint.sh &
-
-# See: http://veithen.github.io/2014/11/16/sigterm-propagation.html
-PID=$!
-wait ${PID}
-wait ${PID}
-EXIT_STATUS=$?
-
-# コンテナが終了しないようにする
-while true
-do
-  tail -f /dev/null & wait ${!}
-done
+ttyd -p 3100 /ttyd_entrypoint.sh
 
