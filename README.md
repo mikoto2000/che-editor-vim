@@ -18,7 +18,7 @@ docker build --build-arg http_proxy=http://host.docker.internal:3142 -t mikoto20
 ## License:
 
 ```
-Copyright (c) 2020-2022 mikoto2000
+Copyright (c) 2020-2025 mikoto2000
 
 This program and the accompanying materials are made
 available under the terms of the Eclipse Public License 2.0

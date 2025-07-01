@@ -1,46 +1,7 @@
-FROM ubuntu:jammy AS build
+FROM ubuntu:24.04
 
 LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
-LABEL version="20221230"
-LABEL description "version: 20221230"
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-# 今後多分 ttyd/html のカスタマイズも発生するのでコメントアウトするだけ
-# RUN apt-get install -y curl \
-#         gnupg2
-#     && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-
-RUN apt-get update \
-    && apt-get install -y \
-        curl \
-        cmake \
-        g++ \
-        pkg-config \
-        git \
-        libwebsockets-dev \
-        libjson-c-dev \
-        libssl-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN git clone --depth 1 https://github.com/tsl0922/ttyd \
-#    && cd ttyd/html \
-#    && npx yarn install \
-#    && npx yarn run build \
-#    && cd .. \
-    && cd ttyd \
-    && mkdir build \
-    && cd build \
-    && cmake .. \
-    && make \
-    && make install
-
-
-FROM ubuntu:jammy
-
-LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
-LABEL version="20221230"
+LABEL version="20250702"
 LABEL description "vim, ttyd, build-essential, clang, nodejs, java, ruby, python"
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -50,7 +11,7 @@ USER root
 RUN apt-get update \
     && apt-get install -y curl \
         gnupg2 \
-    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y \
         vim \
         ssh \
@@ -67,7 +28,7 @@ RUN apt-get update \
         git \
         libz3-4 \
         libssl3 \
-        libwebsockets16 \
+        libwebsockets19 \
         libjson-c5 \
         libev4 \
         libuv1 \
@@ -78,9 +39,11 @@ RUN apt-get update \
 
 ENV LANG ja_JP.UTF-8
 
-COPY --from=build \
-        /usr/local/bin/ttyd \
-        /usr/local/bin/ttyd
+
+RUN curl -L \
+        https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.x86_64 \
+        -o /usr/local/bin/ttyd \
+    && chmod +x /usr/local/bin/ttyd
 
 RUN curl -L \
         https://github.com/mikoto2000/che-terminal-connector/releases/download/v0.0.7/che-terminal-connector \
@@ -88,7 +51,6 @@ RUN curl -L \
     && chmod +x /usr/local/bin/che-terminal-connector
 
 ENV HOME /projects
-ENV MACHINE_EXEC_PORT 3333
 WORKDIR /projects
 
 RUN mkdir -p /projects \
@@ -97,8 +59,8 @@ RUN mkdir -p /projects \
        chmod -R g+rwX ${f}; \
     done
 
-COPY --chown=0:0 ./entrypoint.sh /entrypoint.sh
-COPY ./ttyd_entrypoint.sh /ttyd_entrypoint.sh
+COPY --chown=0:0 --chmod=755 ./entrypoint.sh /entrypoint.sh
+COPY --chown=0:0 --chmod=755 ./ttyd_entrypoint.sh /ttyd_entrypoint.sh
 
 ENV SHELL bash
 

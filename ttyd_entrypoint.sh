@@ -8,10 +8,6 @@ if [ -d ~/_vim ]; then
 fi
 echo "done."
 
-# ワークスペースの強制終了を防ぐために
-# che-machine-exec に定期的にアクティビティを送信
-watch -n 1500 curl -X POST localhost:${MACHINE_EXEC_PORT}/activity/tick > /dev/null &
-
 clear
 
 while true

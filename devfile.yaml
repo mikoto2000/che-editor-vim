@@ -1,0 +1,23 @@
+schemaVersion: 2.2.0
+metadata:
+  name: che-editor-vim
+components:
+  - name: vim
+    container:
+      image: mikoto2000/che-editor-vim:latest
+      imagePullPolicy: Always
+      mountSources: true
+      memoryLimit: 512M
+      cpuLimit: 1500m
+      cpuRequest: 100m
+      endpoints:
+        - name: vim-ide
+          targetPort: 3100
+          exposure: public
+          protocol: http
+          attributes:
+            type: main
+            cookiesAuthEnabled: true
+            discoverable: false
+            secure: true
+            urlRewriteSupported: true

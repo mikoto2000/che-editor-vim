@@ -18,5 +18,5 @@ if [ "${USER_ID}" -ne 0 ] && command -v sudo >/dev/null 2>&1 && sudo -n true > /
     sudo chown "${USER_ID}:${GROUP_ID}" /projects
 fi
 
-ttyd -p 3100 /ttyd_entrypoint.sh
+ttyd -p 3100 --writable /ttyd_entrypoint.sh
 
