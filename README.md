@@ -2,12 +2,25 @@
 
 Eclipse Che のエディタとして Vim を使うプロジェクト。
 
-## Example
+## Usage:
 
-TODO: che.openshift.io の URL
+### エディタの指定方法
+
+1. Eclipse Che のダッシュボードを開く
+    - ex: `https://workspaces.openshift.com/`
+2. `Editor Selector` -> `Use an Editor Definition` -> `Editor Definition` に以下 che-editor-vim の定義をペースト
+    - `https://raw.githubusercontent.com/mikoto2000/che-editor-vim/refs/heads/main/devfile.yaml`
+
+See: [クラウド IDE でサーバーを立ててエンドポイントへ接続 with Vim - YouTube](https://www.youtube.com/watch?v=2JuRGNzFPzI)
 
 
-## Build
+### che-editor-vim 向けの組み込みコマンド
+
+- `che-terminal-connector`: サイドカーコンテナに接続するためのコマンド
+- `che-endpoint-viewer`: 定義したエンドポイント一覧を表示するためのコマンド
+
+
+## Build:
 
 ```sh
 git clone --recurse http://github.com/mikoto2000/che-editor-vim.git
@@ -28,4 +41,3 @@ which is available at https://www.eclipse.org/legal/epl-2.0/
 ## Author:
 
 mikoto2000 <mikoto2000@gmail.com>
-
