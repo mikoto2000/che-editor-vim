@@ -4,7 +4,7 @@ metadata:
 components:
   - name: vim
     container:
-      image: mikoto2000/che-editor-vim:latest
+      image: mikoto2000/che-editor-vim:20250705
       imagePullPolicy: Always
       mountSources: true
       memoryLimit: 512M

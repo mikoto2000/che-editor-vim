@@ -45,10 +45,8 @@ RUN curl -L \
         -o /usr/local/bin/ttyd \
     && chmod +x /usr/local/bin/ttyd
 
-RUN curl -L \
-        https://github.com/mikoto2000/che-terminal-connector/releases/download/v0.0.7/che-terminal-connector \
-        -o /usr/local/bin/che-terminal-connector \
-    && chmod +x /usr/local/bin/che-terminal-connector
+RUN npm i -g che-terminal-connector \
+    && npm i -g che-endpoint-viewer
 
 ENV HOME /projects
 WORKDIR /projects
